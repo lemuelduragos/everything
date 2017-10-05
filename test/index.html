@@ -1,0 +1,101 @@
+
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font: 13px Helvetica, Arial; }
+      form { padding: 3px; position: fixed; bottom: 0; width: 100%; }
+      form input { border: solid black 1px; padding: 10px; width: 90%; margin-right: .5%; }
+      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages li { padding: 5px 10px; }
+      #messages li:nth-child(odd) { background: #eee; }
+    </style>
+  </head>
+  <body>
+  <h1>Online: </h1><div id="online"></div>
+    <ul id="messages"></ul>
+    <form action="">
+    <p><b id='typing'></b><span id='isTyping' style="display: none"> is typing..</span></p>
+      <input id="m" autocomplete="off" /><button>Send</button>
+    </form>
+
+  </body>
+</html>
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+<script>
+  $(function () {
+
+  	var name = window.prompt("Please enter your name","Guest");
+    var socket = io();
+    var message = $('#m').text();
+
+    socket.emit('userconnected', name);
+    socket.emit('online', name);
+    socket.emit('users', name);
+
+    socket.on('users', function(msg){
+      socket.emit('online', name);
+    });
+
+    socket.on('online', function(msg){
+      $('#online').text(msg);
+    });
+
+    socket.on('userconnected', function(msg){
+      $('#messages').append($('<li>').text(msg));
+      socket.emit('online', name);
+    });
+
+    socket.on('DC', function(msg){
+      $('#messages').append($('<li>').text(msg));
+    });
+   
+
+    $('form').submit(function(){
+      socket.emit('chat message', $('#m').val(), name);
+      $('#m').val('');
+      $('#'+name+'').text("");
+      return false;
+    });
+
+    socket.on('chat message', function(msg){
+      $('#messages').append($('<li>').text(msg));
+    });
+
+    socket.on('typing', function(msg){
+      if($('#'+msg+'').length == 0){
+        $('#typing').append($('<b id='+msg+'>').text(' ➤'+msg));
+        $('#isTyping').show();
+      } else {
+        $('#'+msg+'').text(' ➤'+msg);
+        $('#isTyping').show();
+      }
+    });
+
+    $('#m').on('blur', function(){
+      socket.emit('remove', name);
+      return false;
+    });
+
+     socket.on('remove', function(name){
+      $('#'+name+'').text("");
+      if (!$('#typing').text().trim().length) {
+          $('#isTyping').hide();
+        }
+      });
+
+     $('#m').keypress(function (e) {
+       var key = e.which;
+       if(key == 13) {
+          socket.emit('remove', name);
+        } else {
+          socket.emit('typing', name);
+        }
+      });  
+  });
+
+</script>

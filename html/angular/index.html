@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon"> 
+  <link rel="stylesheet" href="bootstrap.min.css">
+  <script src="jquery.min.js"></script>
+  <script src="angular.min.js"></script>
+  <script src="bootstrap.min.js"></script>
+  <script src="script.js"></script>
+  <style>
+    /* Remove the navbar's default margin-bottom and rounded borders */ 
+    .navbar {
+      margin-bottom: 0;
+      border-radius: 0;
+    }
+    
+    /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+    .row.content {height: 450px}
+    
+    /* Set gray background color and 100% height */
+    .sidenav {
+      padding-top: 20px;
+      background-color: #f1f1f1;
+      height: 100%;
+    }
+    
+    /* Set black background color, white text and some padding */
+    footer {
+      background-color: #555;
+      color: white;
+      padding: 15px;
+    }
+    
+    /* On small screens, set height to 'auto' for sidenav and grid */
+    @media screen and (max-width: 767px) {
+      .sidenav {
+        height: auto;
+        padding: 15px;
+      }
+      .row.content {height:auto;} 
+    }
+  </style>
+</head>
+<body ng-app="myModule" ng-controller="myController">
+
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <h1>Logo</h1>
+    </div>
+  </div>
+</nav>
+  
+<div class="container-fluid text-center">    
+  <div class="row content">
+    <div class="col-sm-4 sidenav">
+    <div ng-model="fruits.message" id="message"></div>
+		<form name="fruitForm">
+			<div class="form-group">
+				<label for="name">Fruit Name:</label>
+				<input type="text" class="form-control" id="name" ng-model="fruits.name" ng-required="true">
+			</div>
+			<div class="form-group">
+				<label for="stock">Stock:</label>
+				<input type="text" class="form-control" id="stock" ng-model="fruits.stock" ng-required="true">
+			</div>
+			<div class="form-group">
+				<label for="price">Price:</label>
+				<input type="text" class="form-control" id="price" ng-model="fruits.price" ng-required="true">
+			</div>
+			<div class="checkbox">
+				<label><input type="checkbox"> Accept terms and condition</label>
+			</div>
+			<button type="submit" class="btn btn-default" ng-click="fruitForm.$valid && addFruit(fruits.name,fruits.stock,fruits.price)">Submit</button>
+		</form>
+    </div>
+    <div class="col-sm-8 text-left" style="overflow-y: scroll;"> 
+		<table class="table table-hover" >
+			<thead>
+				<tr>
+					<th>Fruit</th>
+					<th>Stock</th>
+					<th>Price</th>
+					<th>Action</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-show="!fruits.length">
+				<td colspan="4" class="text-center">No results found<td>
+				</tr>
+				<tr ng-repeat="fruit in fruits">
+					<td>{{fruit.name}}</td>
+					<td>{{fruit.stock}}</td>
+					<td>{{fruit.price}}</td>
+					<td>
+						<button class="btn btn-info" ng-click="selectFruit($index)">Edit</button>
+						<button class="btn btn-basic" ng-click="deleteFruit($index)">Delete</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+    </div>
+  </div>
+</div>
+
+<footer class="container-fluid text-center">
+  <p>Footer Text</p>
+</footer>
+
+</body>
+</html>
